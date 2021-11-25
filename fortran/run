@@ -1,0 +1,2 @@
+#!/usr/bin/bash
+gfortran collatz.f95 -fdec-structure
