@@ -17,12 +17,12 @@
                 )
             )
 
-            (tempArr '())
+            (tempArr (make-array '(10)))
 
         ); end of vars
 
         (dotimes (i 10)
-            (setf tempArr (append tempArr ( list blankItem)))
+            (setf (aref tempArr i) blankItem )
         ); end do
 
         (return-from prepArr tempArr)
@@ -44,7 +44,7 @@
 
         (loop
             (if (= 0 (mod numHold 2) )
-                (setf numHold (/ numHold 2) )
+                (setf numHold (floor numHold 2) )
                 (setf numHold (+ 1 (* 3 numHold ) ) )
             )
             (setf counter (+ counter 1))
@@ -55,30 +55,57 @@
 )
 
 
-(defvar updateSequence(lengthArr)
+(defun updateSequence(lengthArr inItem)
     (let
         (
             (run 1)
             (difference 0)
             (magnitude 0)
+            (arrItem)
+            (tempItem)
         ); end vars
 
-        (dolist (i lengthArr)
-            ;(setf difference (- (item-itemSequenceLen itemHold) 
-            ;            ( item-itemSequenceLen i) ) )
-            (print i)
-        )
+        (dotimes (i 10)
+            (setf arrItem (aref lengthArr (- 9 i) ) )
+            ;(print arrItem)
+            ;(print inItem)
+            (setf difference (- (item-itemSequenceLen inItem) (item-itemSequenceLen arrItem)))
+            (setf magnitude (- (item-itemNumber inItem) (item-itemNumber arrItem)))
+
+            (when (> difference 0)
+                ( loop for j from 1 to (- 8 i)
+                    ;do ( 
+                        ;(setf tempItem (aref lengthArr (+ j 1)))
+                        ;(setf (aref lengthArr j) tempItem )
+                    ;); end do
+                ); end loop for
+                (setf (aref lengthArr i) inItem)
+            ) ; end when
+            ;(when (and (= difference 0) (> magnitude 0))
+            ;    (return-from updateSequence lengthArr)
+            ;); end when
+            ;(when (or (= difference 0) (< magnitude 0))
+            ;    (setf (nth i lengthArr) inItem)
+            ;    (return-from updateSequence lengthArr)
+            ;); end when
+
+
+        ); end do times
+
+
+    (return-from updateSequence lengthArr)
 
     ); end let
-)
+) ; End function updateSequence
 
 ;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;; Main ;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;
 
 
-(defvar magnitudeArr '() )
-(defvar lengthArr '() )
+(defvar magnitudeArr (make-array '(10) ) )
+(defvar lengthArr (make-array '(10) ) )
+
 
 (defvar itemHold
     (make-item
@@ -88,20 +115,22 @@
 )
 
 (defvar seqLen 0)
-(defvar num 0)
 
-(setf magnitudeArr (prepArr) )
+;(setf magnitudeArr (prepArr) )
 (setf lengthArr (prepArr) )
 
 
 (dotimes (i 12)
     (setq seqLen (calcCollatz i))
     (setq itemHold (make-item :itemNumber i :itemSequenceLen seqLen))
+    
     ;(print itemHold)
-    ;(setq lengthArr (updateSequence lengthArr itemHold))
-    (updateSequence lengthArr)
+    
+    ;(terpri)
+    
+    (setf lengthArr (updateSequence lengthArr itemHold))
 )
 
-;(dolist (i lengthArr)
-;    (print (item-itemNumber i))
+;(dotimes (i 10)
+;    (print (item-itemNumber (aref lengthArr i)))
 ;)
