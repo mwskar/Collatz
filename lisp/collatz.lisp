@@ -38,7 +38,7 @@
             (numHold inNum)
         ); end vars
 
-        (when (= numHold 0)
+        (when (< numHold 2)
             (return-from calcCollatz 0)
         )
 
@@ -62,7 +62,6 @@
             (difference 0)
             (magnitude 0)
             (arrItem)
-            (tempItem)
         ); end vars
 
         (dotimes (i 10)
@@ -72,22 +71,21 @@
             (setf difference (- (item-itemSequenceLen inItem) (item-itemSequenceLen arrItem)))
             (setf magnitude (- (item-itemNumber inItem) (item-itemNumber arrItem)))
 
+
             (when (> difference 0)
-                ( loop for j from 1 to (- 8 i)
-                    ;do ( 
-                        ;(setf tempItem (aref lengthArr (+ j 1)))
-                        ;(setf (aref lengthArr j) tempItem )
-                    ;); end do
-                ); end loop for
-                (setf (aref lengthArr i) inItem)
+                (dotimes (j (- 9 i))
+                        (setf (aref lengthArr j) (aref lengthArr (+ j 1)))
+                ); end do loop
+                (setf (aref lengthArr (- 9 i)) inItem)
+                (return-from updateSequence lengthArr)
             ) ; end when
-            ;(when (and (= difference 0) (> magnitude 0))
-            ;    (return-from updateSequence lengthArr)
-            ;); end when
-            ;(when (or (= difference 0) (< magnitude 0))
-            ;    (setf (nth i lengthArr) inItem)
-            ;    (return-from updateSequence lengthArr)
-            ;); end when
+            (when (and (= difference 0) (> magnitude 0))
+                (return-from updateSequence lengthArr)
+            ); end when
+            (when (or (= difference 0) (< magnitude 0))
+                (setf (aref lengthArr i) inItem)
+                (return-from updateSequence lengthArr)
+            ); end when
 
 
         ); end do times
@@ -125,12 +123,17 @@
     (setq itemHold (make-item :itemNumber i :itemSequenceLen seqLen))
     
     ;(print itemHold)
-    
+    ;(print lengthArr)
     ;(terpri)
     
-    (setf lengthArr (updateSequence lengthArr itemHold))
+    (setq lengthArr (updateSequence lengthArr itemHold))
+    ;(print lengthArr)
+    ;(terpri)
 )
 
 ;(dotimes (i 10)
 ;    (print (item-itemNumber (aref lengthArr i)))
 ;)
+
+(print lengthArr)
+(terpri)
