@@ -96,9 +96,61 @@
     ); end let
 ) ; End function updateSequence
 
+
+(defun updateMagnitude(seqArr)
+    (let
+        (
+            (magArr (prepArr))
+            (seqItem)
+            (magItem)
+        ); end vars
+
+        (dotimes (x 10)
+
+            (setf seqItem (aref seqArr (- 9 x)))
+
+            (block magLoop
+
+            (dotimes (i 10)
+                (setf magItem (aref magArr (- 9 i) ) )
+                
+                (when (> (item-itemNumber seqItem) (item-itemNumber magItem) )
+                    (dotimes (j (- 9 i))
+                            (setf (aref magArr j) (aref magArr (+ j 1)))
+                    ); end do loop
+                    (setf (aref magArr (- 9 i)) seqItem)
+                    (return-from magLoop magArr)
+                ) ; end when
+            ); end do times
+
+            ); end of magLoop block
+
+        ); end outer do times
+
+        (return-from updateMagnitude magArr)
+
+    ); end let
+)
+
+
+(defun argv ()
+
+    ( or
+        #+clisp (ext:argv)
+        #+sbcl sb-ext:*posix-argv*
+    )
+
+) ; end command line args
+
+
 ;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;; Main ;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;
+
+(defvar args)
+(defvar endNum)
+( setq args ( argv ) )
+(setq endNum (parse-integer (nth 1 args)))
 
 
 (defvar magnitudeArr (make-array '(10) ) )
@@ -113,27 +165,25 @@
 )
 
 (defvar seqLen 0)
+(defvar counter)
+(setf counter 1)
 
-;(setf magnitudeArr (prepArr) )
 (setf lengthArr (prepArr) )
 
 
-(dotimes (i 12)
-    (setq seqLen (calcCollatz i))
-    (setq itemHold (make-item :itemNumber i :itemSequenceLen seqLen))
+(loop 
+    (setq seqLen (calcCollatz counter))
+    (setq itemHold (make-item :itemNumber counter :itemSequenceLen seqLen))
     
-    ;(print itemHold)
-    ;(print lengthArr)
-    ;(terpri)
     
     (setq lengthArr (updateSequence lengthArr itemHold))
-    ;(print lengthArr)
-    ;(terpri)
+    (when (= counter endNum) (return nil) )
+    (incf counter)
 )
 
-;(dotimes (i 10)
-;    (print (item-itemNumber (aref lengthArr i)))
-;)
+(setf magnitudeArr (updateMagnitude lengthArr))
 
 (print lengthArr)
+(terpri)
+(print magnitudeArr)
 (terpri)
