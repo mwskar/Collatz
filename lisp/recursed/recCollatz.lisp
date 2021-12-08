@@ -172,7 +172,7 @@
 (defvar magnitudeArr (make-array '(10) ) )
 (defvar lengthArr (make-array '(10) ) )
 
-
+;; A variable for holding a tempory 'Item'
 (defvar itemHold
     (make-item
         :itemNumber 0
@@ -184,6 +184,8 @@
 (defvar counter)
 (setf counter 1)
 
+
+; Set all items in the legnth array to -1 -1
 (setf lengthArr (prepArr) )
 
 ;; Run for the entirety of the range input 
