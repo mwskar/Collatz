@@ -1,40 +1,39 @@
 program collatz
 
+!! 'Item' struct to hold onto paired data
 type item
     integer*8 :: number, sequenceLen
 end type
 
 
 type(item) :: magnitudeArr(1:10), lengthArr(1:10), itemHold
+character(1000) :: arg
+integer*8 :: userInput, sequenceLen, counter
 
-integer*8 :: userInput, sequenceLen, arraySize, i
-
-!! Get user input
-!write(*,'(A)', advance = 'NO') "Please enter a positive number: "
-!read(*,*) userInput
-
-
-arraySize = 10
+call get_command_argument (1 , arg)
+read (arg, *) userInput
 
 call prepList
 
-do i = 1, 1000000
-    sequenceLen = calcCollatz(i)
-    !print*, i, sequenceLen
-    !print*, ""
+do counter = 1, userInput
+    sequenceLen = calcCollatz(counter)
 
-    itemHold%number = i
+    itemHold%number = counter
     itemHold%sequenceLen = sequenceLen
-    !print*, itemHold
-    !print*, ""
     call updateSequence
-    !print*, "Checking : ", i
 end do
 
 call updateMagnitude
 
-do i = 1, arraySize
-    print *, lengthArr(i), "    |   ", magnitudeArr(i)
+print*, "Sorted by sequence length"
+do i = 10, 1, -1
+    print *, lengthArr(i)
+end do
+
+
+print*, "Sorted by integer size"
+do i = 10, 1, -1
+    print*, magnitudeArr(i)
 end do
 
 !!!!!!!!!!!!!!!!!!!!!!!!!
@@ -43,10 +42,12 @@ end do
 
 contains
 
+!! Returns an array of ten 'Items' with -1 for both values
+
 subroutine prepList
 integer :: i
 
-    do i = 1, arraySize
+    do i = 1, 10
         lengthArr(i)%number = -1
         lengthArr(i)%sequenceLen = -1
         magnitudeArr(i)%number = -1
@@ -54,23 +55,36 @@ integer :: i
     end do
 end subroutine prepList
 
+
+
+
+!! Updates the sequence array using an insertion sort
+!! 'Items' are ranked based upon the length of their collatz sequence length
+!! Array is organized lowest -> highest
 subroutine updateSequence
 
 integer*8 :: difference, magnitude, i, l
 
-    !print *, "IN updateSequence"
-
-    do i = arraySize, 1, -1
+    !! Iterate backwards through sequence array
+    do i = 10, 1, -1
         
+        !! Calculate variables for easy checking
         difference = itemHold%sequenceLen - lengthArr(i)%sequenceLen
         magnitude = itemHold%number - lengthArr(i)%number
-        !print *, "Chekcking :", itemHold%number, "|   diff: ", difference, "|   mag: ", magnitude
+
+        !!  When the input sequence is greater,
+        !! shift all items down and place the new item at
+        !! the location
+        !! insert the new item
         if ( difference > 0) then
             do l = 1, i - 1, 1
                 lengthArr(l) = lengthArr(l+1)
             end do
             lengthArr(i) = itemHold
             return
+        
+        !! The next two statemnts keep the item with the
+        !! lowest integer when they have the same sequence length
         elseif (difference == 0 .and. magnitude > 0) then
             !print *, "IN elif"
             !lengthArr(i) = itemHold
@@ -83,22 +97,31 @@ integer*8 :: difference, magnitude, i, l
     end do
 end subroutine updateSequence
 
+
+!! Update the magArray with the contents of seqArray
 subroutine updateMagnitude
 
 integer :: i, l, k
 type (item) :: seqItem, magItem
 
-do i = arraySize, 1, -1
-    seqItem = lengthArr(i)
+
+!! For every item in the sequence array
+!! Starting from the end
+do i = 10, 1, -1
+    seqItem = lengthArr(i) ! save the item from the seqArray
     
-    do l = arraySize, 1, -1
-        magItem = magnitudeArr(l)
+    !! Search through the magArray for the correct spot
+    do l = 10, 1, -1
+        magItem = magnitudeArr(l) ! save the item from the magArray
         
+        !! If the sequence item is greater than the current magItem
         if (seqItem%number > magItem%number) then
+            
+            !! Move all items down
             do k = 1, l - 1, 1
-                magnitudeArr(k) = magnitudeArr(k+1)
+                magnitudeArr(k) = magnitudeArr(k+1) 
             end do
-            magnitudeArr(l) = seqItem
+            magnitudeArr(l) = seqItem ! Insert the item
             exit
         
         end if
@@ -116,7 +139,7 @@ end program collatz
 !!!      Functions      !!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-
+!! Calculates the collatz sequence length for a number
 recursive function calcCollatz(input) result(ans)
 integer*8, intent (in) :: input
 

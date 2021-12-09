@@ -6,15 +6,15 @@ struct Item
     sequencelen::Int64
 end
 
-## Calculates the collatz sequence langth for a number
+## Calculates the collatz sequence length for a number
 function collatz(inNum)
     local number = inNum
     local counter = 0
     while (number != 1)
         if (number % 2 == 0)
-            number = fld(number,2)
+            return 1 + collatz( fld(number,2) )
         else
-            number = (number * 3) + 1
+            return 1 + collatz( (number * 3) + 1)
         end
         counter = counter + 1
     end
@@ -42,7 +42,7 @@ function updateSequence(vec::Vector{Item}, insert::Item)
     local magnitude
     local itemHold
 
-    # Iterate backwards throgh sequence array
+    # Iterate backwards through sequence array
     for i in 10:-1:1
         itemHold = vec[i] # Hold onto item at location
 
@@ -59,9 +59,11 @@ function updateSequence(vec::Vector{Item}, insert::Item)
             for j in 1:i-1
                 vec[j] = vec[j+1]
             end
-                vec[i] = insert
-            break
 
+                vec[i] = insert
+            
+            break
+        
         ## The next two statemnts keep the item with the
         ## lowest integer when they have the same sequence length
         elseif (difference == 0 && magnitude < 0)
@@ -76,12 +78,12 @@ function updateSequence(vec::Vector{Item}, insert::Item)
     return vec
 end
 
+
 #Update the magArray with the contents of seqArray
 function updateMag(vec::Vector{Item})
     local tempArr = prepList()
     local seqItem
     local magItem
-
 
     # For every item in the sequence array
     # starting from the end
@@ -96,7 +98,7 @@ function updateMag(vec::Vector{Item})
             if (seqItem.num > magItem.num)
                 # Move all items down
                 for l in 1:k-1
-                    tempArr[l] = tempArr[l + 1] 
+                    tempArr[l] = tempArr[l + 1]
                 end
                 tempArr[k] = seqItem # Insert the item
                 break
@@ -110,7 +112,6 @@ function updateMag(vec::Vector{Item})
     return tempArr
 
 end # End func update Magnitude
-
 
 
 #######################
@@ -133,10 +134,11 @@ seqArr = prepList()
 
 #Runs for the user input range
 while (number <= lastNum)
-    seqholder = collatz(number) # Get the collatz sequence
 
+    seqholder = collatz(number) # Get the collatz sequence
+ 
     #If the new seqence is greater than or equal to the least sequence
-    if (seqholder > seqArr[1].sequencelen)
+    if (seqholder >= seqArr[1].sequencelen)
         
         #Update the sequence array with a new item
         seqArr = updateSequence(seqArr, Item(number,seqholder))
