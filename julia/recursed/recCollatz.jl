@@ -10,7 +10,7 @@ end
 function collatz(inNum)
     local number = inNum
     local counter = 0
-    if (number < 2) return 0
+    if (number < 2) return 0 end
 
     if (number % 2 == 0)
         return 1 + collatz( fld(number,2) )
