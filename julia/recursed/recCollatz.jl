@@ -10,15 +10,13 @@ end
 function collatz(inNum)
     local number = inNum
     local counter = 0
-    while (number != 1)
-        if (number % 2 == 0)
-            return 1 + collatz( fld(number,2) )
-        else
-            return 1 + collatz( (number * 3) + 1)
-        end
-        counter = counter + 1
+    if (number < 2) return 0
+
+    if (number % 2 == 0)
+        return 1 + collatz( fld(number,2) )
+    else
+        return 1 + collatz( (number * 3) + 1)
     end
-    return counter
 end
 
 ## Returns an array of ten 'Items' with -1 for both values
